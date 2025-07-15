@@ -1,6 +1,6 @@
 package main
 
-import "github.com/bepass-org/ipscanner"
+import "github.com/Ptechgithub/ipscanner"
 
 func main() {
 	// new scanner

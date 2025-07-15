@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bepass-org/ipscanner/internal/statute"
+	"github.com/Ptechgithub/ipscanner/internal/statute"
 )
 
 type IPQueue struct {

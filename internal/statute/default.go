@@ -184,10 +184,14 @@ func (l DefaultLogger) Error(s string, v ...interface{}) {
 }
 
 func DefaultIPQueueChangeCallback(ips []IPInfo) {
-	fmt.Printf("queue change: %d\r\n", len(ips))
-	for _, ip := range ips {
-		fmt.Printf("IP:%s\tRTT:%d\tTS:%s\r\n", ip.IP.String(), ip.RTT, ip.CreatedAt.String())
+	fmt.Printf("📋 Queue changed: %d responsive IP(s)\n", len(ips))
+	fmt.Println("───────────────────────🌐 Result ───────────────────────")
+	for i, ip := range ips {
+		ts := ip.CreatedAt.Format("2006-01-02 15:04:05")
+		ipWithPort := fmt.Sprintf("%s:%d", ip.IP.String(), ip.Port)
+		fmt.Printf("🔹 %2d) IP: %-21s | RTT: %4d ms | TS: %s\n", i+1, ipWithPort, ip.RTT, ts)
 	}
+	fmt.Println("────────────────────────────────────────────────────────")
 }
 
 var DefaultCFRanges = []string{

@@ -12,7 +12,7 @@ IPScanner is a Go package designed for scanning and analyzing IP addresses. It u
 To use IPScanner, simply import the package and initialize a new scanner with your desired options.
 
 ```go
-import "github.com/bepass-org/ipscanner"
+import "github.com/Ptechgithub/ipscanner"
 
 func main() {
     scanner := ipscanner.NewScanner(

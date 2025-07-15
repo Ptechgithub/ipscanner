@@ -7,7 +7,7 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/bepass-org/ipscanner/internal/statute"
+	"github.com/Ptechgithub/ipscanner/internal/statute"
 
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"

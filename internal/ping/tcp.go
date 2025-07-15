@@ -3,7 +3,7 @@ package ping
 import (
 	"context"
 	"fmt"
-	"github.com/bepass-org/ipscanner/internal/statute"
+	"github.com/Ptechgithub/ipscanner/internal/statute"
 	"net"
 	"strconv"
 	"time"

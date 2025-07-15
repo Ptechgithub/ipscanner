@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/netip"
 
-	"github.com/bepass-org/ipscanner/internal/statute"
+	"github.com/Ptechgithub/ipscanner/internal/statute"
 )
 
 type Ping struct {

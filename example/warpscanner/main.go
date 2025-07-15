@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"fmt"
-	"github.com/bepass-org/ipscanner"
+	"github.com/Ptechgithub/ipscanner"
 	"net"
 	"net/netip"
 	"time"
@@ -23,7 +23,6 @@ func canConnectIPv6(remoteAddr string) bool {
 }
 
 func RunScan(privKey, pubKey string) (result []string) {
-	// new scanner
 	scanner := ipscanner.NewScanner(
 		ipscanner.WithWarpPing(),
 		ipscanner.WithWarpPrivateKey(privKey),
@@ -43,25 +42,30 @@ func RunScan(privKey, pubKey string) (result []string) {
 			"2606:4700:d1::/48",
 		}),
 	)
+
 	scanner.Run()
+
 	var ipList []netip.Addr
+	targetCount := 5
+
 	for {
 		ipList = scanner.GetAvailableIPS()
-		if len(ipList) > 2 {
+		if len(ipList) >= targetCount {
 			scanner.Stop()
 			break
 		}
 		time.Sleep(1 * time.Second)
 	}
-	for i := 0; i < 2; i++ {
+	
+	count := targetCount
+	if len(ipList) < targetCount {
+		count = len(ipList)
+	}
+	for i := 0; i < count; i++ {
 		result = append(result, ipToAddress(ipList[i]))
 	}
-	return
-}
 
-func main() {
-	fmt.Println(RunScan("yGXeX7gMyUIZmK5QIgC7+XX5USUSskQvBYiQ6LdkiXI=", "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo="))
-	time.Sleep(10 * time.Second)
+	return
 }
 
 func ipToAddress(ip netip.Addr) string {
@@ -70,7 +74,6 @@ func ipToAddress(ip netip.Addr) string {
 		1843, 2371, 2408, 2506, 3138, 3476, 3581, 3854, 4177, 4198, 4233, 4500, 5279,
 		5956, 7103, 7152, 7156, 7281, 7559, 8319, 8742, 8854, 8886}
 
-	// Pick a random port number
 	b := make([]byte, 8)
 	n, err := rand.Read(b)
 	if n != 8 {
@@ -79,4 +82,9 @@ func ipToAddress(ip netip.Addr) string {
 		panic(err)
 	}
 	return fmt.Sprintf("%s:%d", ip.String(), ports[int(b[0])%len(ports)])
+}
+
+func main() {
+	fmt.Println(RunScan("ABphkzSfX5lnYOBIOk5Yp5oicK/DaLJb8Cybdy71N3w=", "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo="))
+	time.Sleep(10 * time.Second)
 }

@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bepass-org/ipscanner/internal/statute"
+	"github.com/Ptechgithub/ipscanner/internal/statute"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/flynn/noise"
 	"golang.org/x/crypto/blake2s"

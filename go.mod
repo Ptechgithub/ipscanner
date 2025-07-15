@@ -1,4 +1,4 @@
-module github.com/bepass-org/ipscanner
+module github.com/Ptechgithub/ipscanner
 
 go 1.21.1
 

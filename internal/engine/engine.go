@@ -2,14 +2,13 @@ package engine
 
 import (
 	"context"
-	"fmt"
 	"net/netip"
 	"strings"
 	"time"
 
-	"github.com/bepass-org/ipscanner/internal/iterator"
-	"github.com/bepass-org/ipscanner/internal/ping"
-	"github.com/bepass-org/ipscanner/internal/statute"
+	"github.com/Ptechgithub/ipscanner/internal/iterator"
+	"github.com/Ptechgithub/ipscanner/internal/ping"
+	"github.com/Ptechgithub/ipscanner/internal/statute"
 )
 
 type Engine struct {
@@ -31,9 +30,11 @@ func NewScannerEngine(opts *statute.ScannerOptions, ctx ...context.Context) *Eng
 	} else {
 		contextToUse, cancel = context.WithCancel(context.Background())
 	}
+
 	p := ping.Ping{
 		Options: opts,
 	}
+
 	return &Engine{
 		ipQueue:    queue,
 		ctx:        contextToUse,
@@ -55,44 +56,56 @@ func (e *Engine) Run() {
 	for {
 		select {
 		case <-e.ctx.Done():
-			fmt.Println("Context Done!")
+			e.Logger.Debug(" Scanner stopped: context cancelled.")
 			return
+
 		case <-e.ipQueue.available:
-			e.Logger.Debug("New Scanning Round Started")
+			e.Logger.Debug(" Starting new IP scan round...")
+			
+			if len(e.GetAvailableIPs(false)) >= 10 {
+				e.Logger.Debug(" Reached 10 responsive IPs. Stopping scan.")
+				e.cancelFunc()
+				return
+			}
+
 			batch, err := e.generator.NextBatch()
 			if err != nil {
-				e.Logger.Error("Error while generating IP: %v", err)
-				// in case of disastrous error, to prevent resource draining wait for 2 seconds and try again
+				e.Logger.Error(" Failed to generate IP batch: %v", err)
 				time.Sleep(2 * time.Second)
 				continue
 			}
+
 			for _, ip := range batch {
 				select {
 				case <-e.ctx.Done():
-					fmt.Println("Context Done!")
+					e.Logger.Debug("\033[32m Scan Completed.\033[0m")
 					return
 				default:
-					e.Logger.Debug("Pinging IP: %s", ip)
+					e.Logger.Debug(" Pinging IP: %s", ip)
+
 					if rtt, err := e.ping(ip); err == nil {
 						ipInfo := statute.IPInfo{
 							IP:        ip,
+							Port:      statute.RandomWarpPort(), // <=== اصلاح شده
 							RTT:       rtt,
 							CreatedAt: time.Now(),
 						}
-						e.Logger.Debug("IP: %s, RTT: %d", ip, rtt)
+						e.Logger.Debug(" Responsive IP: %s (RTT: %d ms)", ip, rtt)
 						e.ipQueue.Enqueue(ipInfo)
-					} else if err != nil {
-						// if timeout error
+					} else {
 						if strings.Contains(err.Error(), ": i/o timeout") {
-							e.Logger.Debug("Timeout Error: %s", ip)
-							continue
+							e.Logger.Debug(" Timeout: No response from %s", ip)
+						} else {
+							e.Logger.Error(" Error pinging %s: %v", ip, err)
 						}
-						e.Logger.Error("Error while pinging IP: %s, Error: %v", ip, err)
 					}
 				}
 			}
+
+			e.Logger.Debug("")
+
 		default:
-			e.Logger.Debug("Engine: call the expire function")
+			e.Logger.Debug(" Idle: running expiration check...")
 			e.ipQueue.Expire()
 			time.Sleep(200 * time.Millisecond)
 		}
@@ -100,5 +113,6 @@ func (e *Engine) Run() {
 }
 
 func (e *Engine) Cancel() {
+	e.Logger.Debug(" Scan cancelled by user.")
 	e.cancelFunc()
 }
