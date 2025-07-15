@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/bepass-org/ipscanner"
 	"net"
+	"net/netip"
 	"time"
 )
 
@@ -43,7 +44,7 @@ func RunScan(privKey, pubKey string) (result []string) {
 		}),
 	)
 	scanner.Run()
-	var ipList []net.IP
+	var ipList []netip.Addr
 	for {
 		ipList = scanner.GetAvailableIPS()
 		if len(ipList) > 2 {
@@ -63,7 +64,7 @@ func main() {
 	time.Sleep(10 * time.Second)
 }
 
-func ipToAddress(ip net.IP) string {
+func ipToAddress(ip netip.Addr) string {
 	ports := []int{500, 854, 859, 864, 878, 880, 890, 891, 894, 903, 908, 928, 934, 939, 942,
 		943, 945, 946, 955, 968, 987, 988, 1002, 1010, 1014, 1018, 1070, 1074, 1180, 1387, 1701,
 		1843, 2371, 2408, 2506, 3138, 3476, 3581, 3854, 4177, 4198, 4233, 4500, 5279,
