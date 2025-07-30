@@ -31,6 +31,13 @@ func RunScan(privKey, pubKey string) (result []string) {
 		ipscanner.WithUseIPv4(true),
 		ipscanner.WithMaxDesirableRTT(500),
 		ipscanner.WithCidrList([]string{
+		        "8.6.112.0/24",
+		        "8.34.70.0/24",
+                        "8.34.146.0/24",
+                        "8.35.211.0/24",
+                        "8.39.125.0/24",
+                        "8.39.204.0/24",
+                        "8.47.69.0/24",
 			"162.159.192.0/24",
 			"162.159.193.0/24",
 			"162.159.195.0/24",
